@@ -197,9 +197,19 @@ def update_weights(network, row, l_rate):
 		if i != 0: #if not the first layer use outputs from previous layer instead
 			inputs = [neuron['output'] for neuron in network[i - 1]]
 		for neuron in network[i]:
+			oldBias = neuron['weights'][-1]
 			for j in range(len(inputs)):
+                #MOMENTUM#
+				oldWeight = neuron['weights'][j]
 				neuron['weights'][j] -= l_rate * neuron['delta'] * inputs[j]
+                #calculate change
+				change = neuron['weights'][j]- oldWeight
+                #change new weight
+				neuron['weights'][j] += 0.9*change
 			neuron['weights'][-1] -= l_rate * neuron['delta']
+			biasChange = neuron['weights'][-1] -oldBias
+			neuron['weights'][-1] +=0.9*biasChange
+
 
 # Train a network for a fixed number of epochs
 def train_network(network, train, l_rate, n_epoch, n_outputs):
@@ -234,7 +244,7 @@ def showNetwork(NN):
 #-1 because last input = expected value
 nInputs = len(trainingData[0])-1
 nOutputs = 1
-network = initialize_network(nInputs, 19, nOutputs)
+network = initialize_network(nInputs, 15, nOutputs)
 
 expectedArr=[]
 for i in range (0,len(trainingData)):
@@ -262,7 +272,7 @@ for layer in network:
 	print(layer)
 
 
-train_network(network, trainingData, 0.6, 20000, nOutputs)
+train_network(network, trainingData, 0.5, 20000, nOutputs)
 #for layer in network:
 #	print(layer)
 
